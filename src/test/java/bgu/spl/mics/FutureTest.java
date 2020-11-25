@@ -29,4 +29,12 @@ public class FutureTest {
         assertTrue(future.isDone());
         assertTrue(str.equals(future.get()));
     }
+
+    @Test
+    public void testIsDone(){
+        String str = "someResult";
+        assertTrue(!future.isDone());
+        future.resolve(str);
+        assertTrue(future.isDone());
+    }
 }
