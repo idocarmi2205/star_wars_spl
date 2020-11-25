@@ -35,6 +35,9 @@ public class FutureTest {
         assertTrue(str.equals(future.get()));
     }
 
+    /**
+     * Tests to see that after future is resolved isDone returns True
+     */
     @Test
     public void testIsDone() {
         String str = "someResult";
@@ -43,6 +46,9 @@ public class FutureTest {
         assertTrue(future.isDone());
     }
 
+    /**
+    tests to make sure empty get returns
+     */
     @Test
     public void testEmptyGet() {
         String str = "someResult";

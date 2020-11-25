@@ -1,6 +1,8 @@
 package bgu.spl.mics;
 
+import java.sql.Time;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A Future object represents a promised result - an object that will
@@ -11,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * No public constructor is allowed except for the empty constructor.
  */
 public class Future<T> {
-    private boolean isDone;
+    private final AtomicBoolean isDone;
     private T result;
 
 
@@ -19,6 +21,8 @@ public class Future<T> {
      * This should be the the only public constructor in this class.
      */
     public Future() {
+        isDone = new AtomicBoolean(false);
+
     }
 
     /**
@@ -30,15 +34,7 @@ public class Future<T> {
      * @return return the result of type T if it is available, if not wait until it is available.
      */
     public T get() {
-        synchronized (this) {
-            while (!isDone) {
-                try {
-                    this.wait(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            this.notify();
+        while (!isDone.compareAndSet(true, false)) {
         }
         return result;
     }
@@ -48,14 +44,14 @@ public class Future<T> {
      */
     public void resolve(T result) {
         this.result = result;
-        this.isDone = true;
+        isDone.set(true);
     }
 
     /**
      * @return true if this object has been resolved, false otherwise
      */
     public boolean isDone() {
-        return isDone;
+        return isDone.get();
     }
 
     /**
@@ -71,14 +67,18 @@ public class Future<T> {
      * elapsed, return null.
      */
     public T get(long timeout, TimeUnit unit) {
-        synchronized (this) {
-                try {
-                    this.wait(unit.toMillis(timeout));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        long millis = unit.toMillis(timeout);
+        while (!isDone.get() & millis > 0) {
+            try {
+                //for how long to sleep??
+                //is there a better way to do this??
+                TimeUnit.MILLISECONDS.sleep(10);
+                millis-=10;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        return isDone?result:null;
+        return isDone.get() ? result : null;
     }
 
 }
