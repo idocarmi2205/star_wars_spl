@@ -17,12 +17,18 @@ class EwokTest {
     void tearDown() {
     }
 
+    /**
+     * checks to see that after ewok is aquired it is no longer available
+     */
     @Test
     void acquire() {
         ewok.acquire();
-        assertTrue(!ewok.available);
+        assertFalse(ewok.available);
     }
 
+    /**
+     * checks to see that after ewok is released it is now available
+     */
     @Test
     void release() {
         ewok.release();

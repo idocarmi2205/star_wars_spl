@@ -32,7 +32,7 @@ public class FutureTest {
         String str = "someResult";
         future.resolve(str);
         assertTrue(future.isDone());
-        assertTrue(str.equals(future.get()));
+        assertEquals(future.get(), str);
     }
 
     /**
@@ -41,13 +41,13 @@ public class FutureTest {
     @Test
     public void testIsDone() {
         String str = "someResult";
-        assertTrue(!future.isDone());
+        assertFalse(future.isDone());
         future.resolve(str);
         assertTrue(future.isDone());
     }
 
     /**
-    tests to make sure empty get returns
+    tests to make sure empty get returns object after it is first empty
      */
     @Test
     public void testEmptyGet() {
@@ -69,6 +69,10 @@ public class FutureTest {
         assertEquals(3, endTime.getEpochSecond()-startTime.getEpochSecond() );
     }
 
+    /**
+     * tests to see that timed get doesn't return object after time ends
+     * also test to see that if future is resolved during timer it does return object
+     */
     @Test
     public void testTimedGet() {
         String str = "someResult";

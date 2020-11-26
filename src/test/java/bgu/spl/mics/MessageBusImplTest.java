@@ -12,15 +12,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusImplTest {
         MessageBusImpl bus;
-        @BeforeAll
-        void setUpClass(){
-
-        }
     @BeforeEach
     void setUp() {
         bus=new MessageBusImpl();
@@ -42,6 +39,7 @@ class MessageBusImplTest {
     void subscribeAndSendEvent() {
         Future<Boolean> future=new Future<>();
         HanSoloMicroservice service=new HanSoloMicroservice();
+        bus.register(service);
         bus.subscribeEvent(AttackEvent.class,service);
         bus.sendEvent(new AttackEvent(future));
         assertTrue(future.get());
@@ -49,44 +47,50 @@ class MessageBusImplTest {
 
     /**
      *
-     * i dont know how we need this for implementation...
-     * maybe some kind of counter for total number of attacks
-     * that can only be recorded by han and c3p0
+     *tests subscribe and send broadcast
+     * subscribes multiple services to same type of event
+     * send broadcast of said event
+     * tests that all services received the event and acted upon it
      */
     @Test
-    void subscribeBroadcast() {
+    void subscribeAndSendBroadcast() {
         Future<Integer> future=new Future<>();
         LinkedList<MicroService> services=new LinkedList<MicroService>() {
         };
         for (int i = 0; i < 5; i++) {
+            //test type of microservice that increases increment for an int future
             services.add(new IntCounterMicroservice());
+            bus.register(services.getLast());
             bus.subscribeBroadcast(TestBroadcastEvent.class,services.getLast());
         }
         bus.sendBroadcast(new TestBroadcastEvent());
+        //checks that all the services increased the int
         assertEquals(5,(int) future.get() );
     }
 
-    @Test
-    void complete() {
-    }
 
+    /**
+     * creates a microservice and registers and subscribes it to an event
+     * uses await message in a different thread and checks that the message is received
+     */
     @Test
-    void sendBroadcast() {
-    }
-
-    @Test
-    void sendEvent() {
-    }
-
-    @Test
-    void register() {
-    }
-
-    @Test
-    void unregister() {
-    }
-
-    @Test
-    void awaitMessage() {
+    void awaitMessage(){
+        Future<Boolean> future=new Future<>();
+        final Message[] message = {null};
+        HanSoloMicroservice service=new HanSoloMicroservice();
+        bus.register(service);
+        bus.subscribeEvent(AttackEvent.class,service);
+        Thread newThread = new Thread(()->{
+            try {
+                message[0] =bus.awaitMessage(service);
+            } catch (InterruptedException e) {
+                //test should not pass if awaitMessage can be interrupted
+                fail("awaitMessage was interrupted");
+                e.printStackTrace();
+            }
+        });
+        newThread.start();
+        bus.sendEvent(new AttackEvent(future));
+        assertNotNull(message[0]);
     }
 }
