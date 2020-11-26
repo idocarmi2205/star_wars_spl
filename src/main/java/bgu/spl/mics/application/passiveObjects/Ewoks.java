@@ -25,11 +25,9 @@ public class Ewoks {
         for (int i=0; i<serialNumbers.size(); i++){
             int sn = serialNumbers.get(i);
             if (!ewoks[sn-1].available)
-                return false;
             ewoks[sn-1].available = false;
         }
-        return true;
+
     }
 
-    public void release
 }
