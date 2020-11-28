@@ -93,4 +93,20 @@ class MessageBusImplTest {
         bus.sendEvent(new AttackEvent(future));
         assertNotNull(message[0]);
     }
+
+    /**
+     * creates an attack event
+     * completes event
+     * checks that the future is resolved and holds the correct value
+     */
+    @Test
+    void complete(){
+        Future<Boolean> future=new Future<>();
+        AttackEvent event=new AttackEvent(future);
+        bus.complete(event,true);
+        //ensures that the event is resolved
+        assertTrue(future.isDone());
+        //ensures that the result is inserted into the future
+        assertTrue(future.get());
+    }
 }
