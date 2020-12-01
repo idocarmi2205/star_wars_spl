@@ -1,8 +1,6 @@
 package bgu.spl.mics;
 
-import java.sql.Time;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A Future object represents a promised result - an object that will
@@ -13,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * No public constructor is allowed except for the empty constructor.
  */
 public class Future<T> {
-    private final AtomicBoolean isDone;
+    private boolean isDone=false;
     private T result;
 
 
@@ -21,7 +19,7 @@ public class Future<T> {
      * This should be the the only public constructor in this class.
      */
     public Future() {
-        isDone = new AtomicBoolean(false);
+
 
     }
 
@@ -33,8 +31,14 @@ public class Future<T> {
      *
      * @return return the result of type T if it is available, if not wait until it is available.
      */
-    public T get() {
-        while (!isDone.compareAndSet(true, false)) {
+    public synchronized T get() {
+        while (!isDone()) {
+            try{
+                wait();
+            }
+            catch(InterruptedException ex) {
+                ex.printStackTrace();
+            }
         }
         return result;
     }
@@ -42,16 +46,17 @@ public class Future<T> {
     /**
      * Resolves the result of this Future object.
      */
-    public void resolve(T result) {
+    public synchronized void resolve(T result) {
         this.result = result;
-        isDone.set(true);
+        isDone=true;
+        notifyAll();
     }
 
     /**
      * @return true if this object has been resolved, false otherwise
      */
     public boolean isDone() {
-        return isDone.get();
+        return isDone;
     }
 
     /**
@@ -64,21 +69,21 @@ public class Future<T> {
      * @param unit    the {@link TimeUnit} time units to wait.
      * @return return the result of type T if it is available, if not,
      * wait for {@code timeout} TimeUnits {@code unit}. If time has
-     * elapsed, return null.
+     * elapsed, return null
      */
-    public T get(long timeout, TimeUnit unit) {
+    public synchronized T get(long timeout, TimeUnit unit) {
         long millis = unit.toMillis(timeout);
-        while (!isDone.get() & millis > 0) {
+        while (!isDone() & millis > 0) {
             try {
                 //for how long to sleep??
                 //is there a better way to do this??
-                TimeUnit.MILLISECONDS.sleep(10);
-                millis-=10;
+                TimeUnit.MILLISECONDS.sleep(1);
+                millis--;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        return isDone.get() ? result : null;
+        return isDone() ? result : null;
     }
 
 }

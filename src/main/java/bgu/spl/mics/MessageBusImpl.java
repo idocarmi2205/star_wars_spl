@@ -1,12 +1,9 @@
 package bgu.spl.mics;
 
 
-import java.util.Dictionary;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
@@ -15,7 +12,26 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {
 
-	Dictionary<MicroService,BlockingQueue<Event>> queues;
+	Map<MicroService,BlockingQueue<Message>> microServiceQueues;
+	Map<Class<? extends Event>,BlockingQueue<MicroService>> eventQueues;
+	Map<Class<? extends Event>,List<MicroService>> broadcastLists;
+
+	/**
+	 * private constructor to enable creating a single instance of MessageBusImpl
+	 */
+	private MessageBusImpl(){
+		microServiceQueues=new ConcurrentHashMap<>();
+		eventQueues=new ConcurrentHashMap<>();
+		broadcastLists=new ConcurrentHashMap<>();
+	}
+
+	/**
+	 * @return only instance of MessageBusImpl
+	 */
+	public MessageBusImpl getInstance(){
+		return MessageBusHolder.instance;
+	}
+
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		
@@ -45,17 +61,25 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		
+
+
 	}
 
 	@Override
 	public void unregister(MicroService m) {
-		
+
 	}
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 		
 		return null;
+	}
+
+	/**
+	 * private static class which will hold the single instance of MessageBusImpl
+	 */
+	private static class MessageBusHolder{
+		private static final MessageBusImpl instance=new MessageBusImpl();
 	}
 }

@@ -24,7 +24,7 @@ public class FutureTest {
 
     @BeforeEach
     public void setUp() {
-        future = new Future<>();
+        future = new Future<String>();
     }
 
     @Test

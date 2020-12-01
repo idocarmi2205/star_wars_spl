@@ -5,6 +5,7 @@ import bgu.spl.mics.application.messages.TestBroadcastEvent;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.services.HanSoloMicroservice;
 import bgu.spl.mics.application.services.IntCounterMicroservice;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,7 @@ class MessageBusImplTest {
         MessageBusImpl bus;
     @BeforeEach
     void setUp() {
-        bus=new MessageBusImpl();
+        bus=bus.getInstance();
     }
 
     @AfterEach
@@ -37,11 +38,11 @@ class MessageBusImplTest {
      */
     @Test
     void subscribeAndSendEvent() {
-        Future<Boolean> future=new Future<>();
+        Future<Boolean> future= new Future<Boolean>();
         HanSoloMicroservice service=new HanSoloMicroservice();
         bus.register(service);
         bus.subscribeEvent(AttackEvent.class,service);
-        bus.sendEvent(new AttackEvent(future));
+        Future<Boolean> f = bus.sendEvent(new AttackEvent());
         assertTrue(future.get());
     }
 
@@ -54,7 +55,7 @@ class MessageBusImplTest {
      */
     @Test
     void subscribeAndSendBroadcast() {
-        Future<Integer> future=new Future<>();
+        Future<Integer> future=new Future<Integer>();
         LinkedList<MicroService> services=new LinkedList<MicroService>() {
         };
         for (int i = 0; i < 5; i++) {
@@ -75,7 +76,7 @@ class MessageBusImplTest {
      */
     @Test
     void awaitMessage(){
-        Future<Boolean> future=new Future<>();
+        Future<Boolean> future=new Future<Boolean>();
         final Message[] message = {null};
         HanSoloMicroservice service=new HanSoloMicroservice();
         bus.register(service);
@@ -90,7 +91,7 @@ class MessageBusImplTest {
             }
         });
         newThread.start();
-        bus.sendEvent(new AttackEvent(future));
+        bus.sendEvent(new AttackEvent());
         assertNotNull(message[0]);
     }
 
@@ -101,8 +102,8 @@ class MessageBusImplTest {
      */
     @Test
     void complete(){
-        Future<Boolean> future=new Future<>();
-        AttackEvent event=new AttackEvent(future);
+        Future<Boolean> future=new Future<Boolean>();
+        AttackEvent event=new AttackEvent();
         bus.complete(event,true);
         //ensures that the event is resolved
         assertTrue(future.isDone());
