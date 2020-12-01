@@ -38,7 +38,7 @@ class MessageBusImplTest {
      */
     @Test
     void subscribeAndSendEvent() {
-        Future<Boolean> future= new Future<Boolean>();
+        Future<Boolean> future= new Future<>();
         HanSoloMicroservice service=new HanSoloMicroservice();
         bus.register(service);
         bus.subscribeEvent(AttackEvent.class,service);
@@ -55,7 +55,7 @@ class MessageBusImplTest {
      */
     @Test
     void subscribeAndSendBroadcast() {
-        Future<Integer> future=new Future<Integer>();
+        Future<Integer> future=new Future<>();
         LinkedList<MicroService> services=new LinkedList<MicroService>() {
         };
         for (int i = 0; i < 5; i++) {
@@ -76,7 +76,7 @@ class MessageBusImplTest {
      */
     @Test
     void awaitMessage(){
-        Future<Boolean> future=new Future<Boolean>();
+        Future<Boolean> future=new Future<>();
         final Message[] message = {null};
         HanSoloMicroservice service=new HanSoloMicroservice();
         bus.register(service);
@@ -102,7 +102,7 @@ class MessageBusImplTest {
      */
     @Test
     void complete(){
-        Future<Boolean> future=new Future<Boolean>();
+        Future<Boolean> future=new Future<>();
         AttackEvent event=new AttackEvent();
         bus.complete(event,true);
         //ensures that the event is resolved
