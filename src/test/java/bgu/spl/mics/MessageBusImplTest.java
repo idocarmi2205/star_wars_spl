@@ -18,10 +18,10 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusImplTest {
-        MessageBusImpl bus;
+        MessageBus bus;
     @BeforeEach
     void setUp() {
-        bus=bus.getInstance();
+        bus=MessageBusImpl.getInstance();
     }
 
     @AfterEach
