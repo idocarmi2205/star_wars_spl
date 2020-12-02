@@ -1,6 +1,8 @@
 package bgu.spl.mics;
 
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,6 +18,7 @@ public class MessageBusImpl implements MessageBus {
     Map<MicroService, BlockingQueue<Message>> microServiceQueues;
     Map<Class<? extends Event>, BlockingQueue<MicroService>> eventQueues;
     Map<Class<? extends Broadcast>, List<MicroService>> broadcastLists;
+    Map<Event, Future> futures;
 
     /**
      * private constructor to enable creating a single instance of MessageBusImpl
@@ -24,6 +27,7 @@ public class MessageBusImpl implements MessageBus {
         microServiceQueues = new ConcurrentHashMap<>();
         eventQueues = new ConcurrentHashMap<>();
         broadcastLists = new ConcurrentHashMap<>();
+        futures = new ConcurrentHashMap<>();
     }
 
     /**
@@ -35,35 +39,53 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		synchronized (type) {
-			eventQueues.putIfAbsent(type, new LinkedBlockingQueue<>());
-			eventQueues.get(type).add(m);
-		}
+        synchronized (type) {
+            eventQueues.putIfAbsent(type, new LinkedBlockingQueue<>());
+            eventQueues.get(type).add(m);
+        }
     }
 
     @Override
     public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		synchronized (type) {
-			broadcastLists.putIfAbsent(type, new LinkedList<>());
-			broadcastLists.get(type).add(m);
-		}
+        synchronized (type) {
+            broadcastLists.putIfAbsent(type, new LinkedList<>());
+            broadcastLists.get(type).add(m);
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> void complete(Event<T> e, T result) {
-
+        futures.get(e).resolve(result);
+        futures.remove(e);
     }
 
     @Override
     public void sendBroadcast(Broadcast b) {
-
+        if (broadcastLists.containsKey((b.getClass()))) {
+            for (MicroService m : broadcastLists.get(b.getClass())) {
+                microServiceQueues.get(m).add(b);
+            }
+        }
     }
 
 
     @Override
+    /**
+     * send the event to the next available microservice
+     * returns the future
+     * if no microservices are subscribed to this type of event return null
+     */
     public <T> Future<T> sendEvent(Event<T> e) {
-
+        if (eventQueues.containsKey(e.getClass()) && !eventQueues.get(e.getClass()).isEmpty()) {
+            MicroService curr = eventQueues.get(e.getClass()).poll();
+            microServiceQueues.get(curr).add(e);
+            eventQueues.get(e.getClass()).add(curr);
+            curr.notify();
+            Future<T> f = new Future<>();
+            futures.put(e, f);
+            return f;
+        }
         return null;
     }
 
@@ -76,12 +98,29 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public void unregister(MicroService m) {
+        microServiceQueues.remove(m);
+        for (Class<? extends Event> e : eventQueues.keySet()){
+            eventQueues.get(e).remove(m);
+        }
+        for (Class<? extends Broadcast> b : broadcastLists.keySet()){
+            eventQueues.get(b).remove(m);
+        }
+
     }
 
     @Override
+    /**
+     * return the first message in the microservice's queue
+     * if no message exists, wait
+     */
     public Message awaitMessage(MicroService m) throws InterruptedException {
+        synchronized (m) {
+            while (microServiceQueues.get(m).isEmpty()) {
+                m.wait();
+            }
+            return microServiceQueues.get(m).poll();
+        }
 
-        return null;
     }
 
     /**

@@ -110,4 +110,5 @@ class MessageBusImplTest {
         //ensures that the result is inserted into the future
         assertTrue(future.get());
     }
+
 }
