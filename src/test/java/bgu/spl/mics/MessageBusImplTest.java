@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusImplTest {
         MessageBus bus;
+        Attack attack = new Attack(new LinkedList<Integer>(Arrays.asList(1,2)), 1000);
+
     @BeforeEach
     void setUp() {
         bus=MessageBusImpl.getInstance();
@@ -42,7 +45,8 @@ class MessageBusImplTest {
         HanSoloMicroservice service=new HanSoloMicroservice();
         bus.register(service);
         bus.subscribeEvent(AttackEvent.class,service);
-        Future<Boolean> f = bus.sendEvent(new AttackEvent());
+
+        Future<Boolean> f = bus.sendEvent(new AttackEvent(attack));
         assertTrue(future.get());
     }
 
@@ -91,7 +95,7 @@ class MessageBusImplTest {
             }
         });
         newThread.start();
-        bus.sendEvent(new AttackEvent());
+        bus.sendEvent(new AttackEvent(attack));
         assertNotNull(message[0]);
     }
 
@@ -103,7 +107,7 @@ class MessageBusImplTest {
     @Test
     void complete(){
         Future<Boolean> future=new Future<>();
-        AttackEvent event=new AttackEvent();
+        AttackEvent event=new AttackEvent(attack);
         bus.complete(event,true);
         //ensures that the event is resolved
         assertTrue(future.isDone());

@@ -20,15 +20,25 @@ public class Ewok {
     /**
      * Acquires an Ewok
      */
-    public void acquire() {
-        if (available)
-		    available = false;
+    public synchronized void acquire() {
+        while (!available) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        available = false;
+
     }
 
     /**
      * release an Ewok
      */
-    public void release() {
-    	available = true;
+    public synchronized void release() {
+        if (!available){
+            available = true;
+            notify();
+        }
     }
 }

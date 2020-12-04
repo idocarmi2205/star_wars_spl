@@ -147,7 +147,7 @@ public abstract class MicroService implements Runnable {
      */
     protected final void terminate() {
     	running = false;
-    	bus.unregister(this);
+
     }
 
     /**
@@ -164,6 +164,8 @@ public abstract class MicroService implements Runnable {
      */
     @Override
     public final void run() {
+        bus.register(this);
+        initialize();
     	while (running){
             try {
                 bus.awaitMessage(this);
@@ -171,6 +173,7 @@ public abstract class MicroService implements Runnable {
                 e.printStackTrace();
             }
         }
+        bus.unregister(this);
     }
 
 }
