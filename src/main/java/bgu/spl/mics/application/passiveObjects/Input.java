@@ -7,9 +7,7 @@ public class Input {
     int Lando;
     int Ewoks;
 
-    public Input(String path){
 
-    }
     public int getEwoks() {
         return Ewoks;
     }
