@@ -38,8 +38,6 @@ public class Ewoks {
         for (int i=0; i<serialNumbers.size(); i++){
             int sn = serialNumbers.get(i);
             ewoks[sn-1].acquire();
-//            if (!ewoks[sn-1].available)
-//                ewoks[sn-1].available = false;
         }
     }
 
