@@ -1,11 +1,10 @@
 package bgu.spl.mics.application;
-import bgu.spl.mics.application.passiveObjects.Input;
+import bgu.spl.mics.application.passiveObjects.Config;
 import com.google.gson.Gson;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;
-import java.util.Arrays;
 
 /** This is the Main class of the application. You should parse the input file, 
  * create the different components of the application, and run the system.
@@ -20,7 +19,7 @@ public class Main {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		Input input = gson.fromJson(reader, Input.class);
+		Config config = gson.fromJson(reader, Config.class);
 
 
 

@@ -21,7 +21,7 @@ public class Attack {
         this.duration = duration;
     }
 
-    public int getDuration() {
+    public long getDuration() {
         return duration;
     }
 
