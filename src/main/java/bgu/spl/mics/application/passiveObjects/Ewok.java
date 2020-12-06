@@ -38,7 +38,7 @@ public class Ewok {
     public synchronized void release() {
         if (!available){
             available = true;
-            notify();
         }
+        notifyAll();
     }
 }

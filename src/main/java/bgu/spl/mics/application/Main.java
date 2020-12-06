@@ -39,7 +39,6 @@ public class Main {
 		threads[4]=new Thread(new LandoMicroservice(config.getLando()));
 
 		for (Thread t:threads){
-			//should I start or run???
 			t.start();
 		}
 	}
