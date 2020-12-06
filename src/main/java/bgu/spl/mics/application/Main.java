@@ -1,5 +1,8 @@
 package bgu.spl.mics.application;
+import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.passiveObjects.Config;
+import bgu.spl.mics.application.passiveObjects.Ewoks;
+import bgu.spl.mics.application.services.*;
 import com.google.gson.Gson;
 
 import java.io.FileNotFoundException;
@@ -20,8 +23,24 @@ public class Main {
 			e.printStackTrace();
 		}
 		Config config = gson.fromJson(reader, Config.class);
+		Ewoks.getInstance().init(config.getEwoks());
+
+		InitializeMicroservices(config);
 
 
+	}
 
+	private static void InitializeMicroservices(Config config) {
+		Thread[] threads=new Thread[5];
+		threads[0]=new Thread(new LeiaMicroservice(config.getAttacks()));
+		threads[1]=new Thread(new C3POMicroservice());
+		threads[2]=new Thread(new HanSoloMicroservice());
+		threads[3]=new Thread(new R2D2Microservice(config.getR2D2()));
+		threads[4]=new Thread(new LandoMicroservice(config.getLando()));
+
+		for (Thread t:threads){
+			//should I start or run???
+			t.start();
+		}
 	}
 }
