@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.messages.TerminationBroadcast;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -147,8 +149,11 @@ public abstract class MicroService implements Runnable {
      */
     protected final void terminate() {
     	running = false;
+        recordTerminationTime();
 
     }
+
+    protected abstract void recordTerminationTime();
 
     /**
      * @return the name of the service - the service name is given to it in the
@@ -165,15 +170,21 @@ public abstract class MicroService implements Runnable {
     @Override
     public final void run() {
         bus.register(this);
+        //registers all microservices to termination broadcast so they can terminate at the same time
+        subscribeBroadcast(TerminationBroadcast.class, callback->{
+            terminate();
+        });
         initialize();
     	while (running){
             try {
                 Message message = bus.awaitMessage(this);
                 callbackMap.get(message.getClass()).call(message);
+                System.out.println(getName()+" executed"+message.getClass());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+        System.out.println(getName() + " finished running");
         bus.unregister(this);
     }
 

@@ -3,6 +3,7 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
+import bgu.spl.mics.application.passiveObjects.Diary;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +31,13 @@ public class R2D2Microservice extends MicroService {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            Diary.setR2D2Deactivate(System.currentTimeMillis());
             sendEvent(new BombDestroyerEvent());
         });
+    }
+
+    @Override
+    protected void recordTerminationTime() {
+        Diary.setR2D2Terminate(System.currentTimeMillis());
     }
 }

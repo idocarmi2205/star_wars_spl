@@ -28,6 +28,7 @@ public class Ewok {
                 e.printStackTrace();
             }
         }
+        notifyAll();
         available = false;
 
     }

@@ -14,37 +14,41 @@ import java.util.*;
  * You can add ONLY private methods and fields to this class.
  */
 public class Ewoks {
-    private Ewok [] ewoks;
+    private Ewok[] ewoks;
 
     /**
      * private constructor to enable creating a single instance of Ewoks
      */
-    private Ewoks(){
+    private Ewoks() {
     }
 
     /**
      * @return only instance of Ewoks
      */
-    public static Ewoks getInstance() { return Ewoks.EwoksHolder.instance; }
+    public static Ewoks getInstance() {
+        return Ewoks.EwoksHolder.instance;
+    }
 
-    public void init(int numOfEwoks){
+    public void init(int numOfEwoks) {
         ewoks = new Ewok[numOfEwoks];
-        for (int i=0; i<numOfEwoks; i++){
-            ewoks[0] = new Ewok(i+1);
+        for (int i = 0; i < numOfEwoks; i++) {
+            ewoks[i] = new Ewok(i + 1);
         }
     }
 
-    public void acquireEwoks(List<Integer> serialNumbers){
-        for (int i=0; i<serialNumbers.size(); i++){
-            int sn = serialNumbers.get(i);
-            ewoks[sn-1].acquire();
+    public void acquireEwoks(List<Integer> serialNumbers) {
+        for (Integer serial : serialNumbers) {
+            synchronized (ewoks) {
+                ewoks[serial - 1].acquire();
+                System.out.println(serial + "ewok aquired");
+            }
         }
     }
 
-    public void releaseEwoks(List<Integer> serialNumbers){
-        for (int i=0; i<serialNumbers.size(); i++) {
-            int sn = serialNumbers.get(i);
-            ewoks[sn - 1].release();
+    public void releaseEwoks(List<Integer> serialNumbers) {
+        for (Integer serial : serialNumbers) {
+                ewoks[serial - 1].release();
+                System.out.println(serial + "ewok released");
         }
     }
 

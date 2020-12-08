@@ -81,7 +81,7 @@ public class MessageBusImpl implements MessageBus {
             MicroService curr = eventQueues.get(e.getClass()).poll();
             microServiceQueues.get(curr).add(e);
             eventQueues.get(e.getClass()).add(curr);
-            curr.notify();
+
             Future<T> f = new Future<>();
             futures.put(e, f);
             return f;
@@ -103,7 +103,7 @@ public class MessageBusImpl implements MessageBus {
             eventQueues.get(e).remove(m);
         }
         for (Class<? extends Broadcast> b : broadcastLists.keySet()){
-            eventQueues.get(b).remove(m);
+            broadcastLists.get(b).remove(m);
         }
 
     }
@@ -114,12 +114,13 @@ public class MessageBusImpl implements MessageBus {
      * if no message exists, wait
      */
     public Message awaitMessage(MicroService m) throws InterruptedException {
-        synchronized (m) {
-            while (microServiceQueues.get(m).isEmpty()) {
-                m.wait();
-            }
-            return microServiceQueues.get(m).poll();
-        }
+        return microServiceQueues.get(m).take();
+//        synchronized (m) {
+//            while (microServiceQueues.get(m).isEmpty()) {
+//                m.wait();
+//            }
+//            return microServiceQueues.get(m).poll();
+//        }
 
     }
 

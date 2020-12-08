@@ -15,4 +15,9 @@ public class IntCounterMicroservice extends MicroService {
 
     }
 
+    @Override
+    protected void recordTerminationTime() {
+
+    }
+
 }
