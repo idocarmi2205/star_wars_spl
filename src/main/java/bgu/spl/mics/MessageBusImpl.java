@@ -118,13 +118,6 @@ public class MessageBusImpl implements MessageBus {
      */
     public Message awaitMessage(MicroService m) throws InterruptedException {
         return microServiceQueues.get(m).take();
-//        synchronized (m) {
-//            while (microServiceQueues.get(m).isEmpty()) {
-//                m.wait();
-//            }
-//            return microServiceQueues.get(m).poll();
-//        }
-
     }
 
     /**

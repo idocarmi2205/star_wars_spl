@@ -34,7 +34,7 @@ public class Diary {
     }
 
     public long getC3POFinish() {
-        return getC3POFinish();
+        return C3P0Finish;
     }
 
     public long getHanSoloFinish() {
