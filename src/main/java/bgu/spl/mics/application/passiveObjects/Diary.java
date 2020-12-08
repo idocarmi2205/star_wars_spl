@@ -29,6 +29,42 @@ public class Diary {
      */
     public static Diary getInstance() { return Diary.DiaryHolder.instance; }
 
+    public AtomicInteger getNumberOfAttacks() {
+        return totalAttacks;
+    }
+
+    public long getC3POFinish() {
+        return getC3POFinish();
+    }
+
+    public long getHanSoloFinish() {
+        return HanSoloFinish;
+    }
+
+    public long getR2D2Deactivate() {
+        return R2D2Deactivate;
+    }
+
+    public long getHanSoloTerminate() {
+        return HanSoloTerminate;
+    }
+
+    public long getC3POTerminate() {
+        return C3P0Terminate;
+    }
+
+    public long getLandoTerminate() {
+        return LandoTerminate;
+    }
+
+    public long getR2D2Terminate() {
+        return R2D2Terminate;
+    }
+
+    public void resetNumberAttacks() {
+        totalAttacks.set(0);
+    }
+
     private static class DiaryHolder{
         private static final Diary instance = new Diary();
     }

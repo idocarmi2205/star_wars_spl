@@ -42,7 +42,7 @@ public class LeiaMicroservice extends MicroService {
          * wait for 5 milliseconds so that all the attack microservices have a chance to subscribe to the event
          */
         try {
-            TimeUnit.MILLISECONDS.sleep(5);
+            TimeUnit.MILLISECONDS.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

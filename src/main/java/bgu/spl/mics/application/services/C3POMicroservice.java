@@ -41,6 +41,7 @@ public class C3POMicroservice extends MicroService {
             }
             ewoks.releaseEwoks(attackToMake.getSerials());
             complete(callback,true);
+            System.out.println("Attack " +attackToMake.getSerials()+" Completed");
             Diary.addAttack();
         });
 

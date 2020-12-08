@@ -17,7 +17,7 @@ public class MessageBusImpl implements MessageBus {
 
     Map<MicroService, BlockingQueue<Message>> microServiceQueues;
     Map<Class<? extends Event>, BlockingQueue<MicroService>> eventQueues;
-    Map<Class<? extends Broadcast>, List<MicroService>> broadcastLists;
+    Map<Class<? extends Broadcast>, BlockingQueue<MicroService>> broadcastLists;
     Map<Event, Future> futures;
 
     /**
@@ -48,7 +48,7 @@ public class MessageBusImpl implements MessageBus {
     @Override
     public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
         synchronized (type) {
-            broadcastLists.putIfAbsent(type, new LinkedList<>());
+            broadcastLists.putIfAbsent(type, new LinkedBlockingQueue<>());
             broadcastLists.get(type).add(m);
         }
     }
@@ -77,16 +77,19 @@ public class MessageBusImpl implements MessageBus {
      * if no microservices are subscribed to this type of event return null
      */
     public <T> Future<T> sendEvent(Event<T> e) {
-        if (eventQueues.containsKey(e.getClass()) && !eventQueues.get(e.getClass()).isEmpty()) {
-            MicroService curr = eventQueues.get(e.getClass()).poll();
-            microServiceQueues.get(curr).add(e);
-            eventQueues.get(e.getClass()).add(curr);
+        synchronized (e.getClass()) {
+            if (eventQueues.containsKey(e.getClass()) && !eventQueues.get(e.getClass()).isEmpty()) {
+                MicroService curr = eventQueues.get(e.getClass()).poll();
+                Future<T> f = new Future<>();
+                futures.put(e, f);
+                microServiceQueues.get(curr).add(e);
+                eventQueues.get(e.getClass()).add(curr);
 
-            Future<T> f = new Future<>();
-            futures.put(e, f);
-            return f;
+                return f;
+            }
+            return null;
         }
-        return null;
+
     }
 
     @Override

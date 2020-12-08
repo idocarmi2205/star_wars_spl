@@ -37,10 +37,10 @@ public class Ewoks {
     }
 
     public void acquireEwoks(List<Integer> serialNumbers) {
-        for (Integer serial : serialNumbers) {
-            synchronized (ewoks) {
+        synchronized (ewoks) {
+            for (Integer serial : serialNumbers) {
                 ewoks[serial - 1].acquire();
-                System.out.println(serial + "ewok aquired");
+                System.out.println("ewok: "+serial + " aquired");
             }
         }
     }
@@ -48,7 +48,7 @@ public class Ewoks {
     public void releaseEwoks(List<Integer> serialNumbers) {
         for (Integer serial : serialNumbers) {
                 ewoks[serial - 1].release();
-                System.out.println(serial + "ewok released");
+            System.out.println("ewok: "+serial + " released");
         }
     }
 
