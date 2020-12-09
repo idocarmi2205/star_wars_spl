@@ -40,14 +40,14 @@ public class Ewoks {
         Collections.sort(serialNumbers);
         for (Integer serial : serialNumbers) {
             ewoks[serial - 1].acquire();
-//            System.out.println("ewok: "+serial + " aquired");
+            System.out.println("ewok: "+serial + " aquired");
         }
     }
 
     public void releaseEwoks(List<Integer> serialNumbers) {
         for (Integer serial : serialNumbers) {
                 ewoks[serial - 1].release();
-//            System.out.println("ewok: "+serial + " released");
+            System.out.println("ewok: "+serial + " released");
         }
     }
 

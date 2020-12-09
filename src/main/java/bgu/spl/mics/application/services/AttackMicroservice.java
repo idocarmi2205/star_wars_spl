@@ -3,7 +3,6 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.FinishedAttacksBroadcast;
-import bgu.spl.mics.application.messages.ReadyForAttackEvent;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
@@ -38,10 +37,10 @@ public abstract class AttackMicroservice extends MicroService {
             }
             ewoks.releaseEwoks(attackToMake.getSerials());
             complete(callback,true);
-//            System.out.println("Attack " +attackToMake.getSerials()+" Completed By "+getName());
+            System.out.println("Attack " +attackToMake.getSerials()+" Completed By "+getName());
             Diary.addAttack();
         });
-        sendEvent(new ReadyForAttackEvent());
+
         subscribeBroadcast(FinishedAttacksBroadcast.class, callback->{
             Diary.setC3P0Finish(System.currentTimeMillis());
         });
