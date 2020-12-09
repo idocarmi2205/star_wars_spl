@@ -99,7 +99,7 @@ public class Main {
 	}
 
 	private static void InitializeMicroservices(Config config,Thread[] threads) {
-		threads[0]=new Thread(new LeiaMicroservice(config.getAttacks()));
+		threads[0]=new Thread(new LeiaMicroservice(config.getAttacks(),2));
 		threads[1]=new Thread(new C3POMicroservice());
 		threads[2]=new Thread(new HanSoloMicroservice());
 		threads[3]=new Thread(new R2D2Microservice(config.getR2D2()));

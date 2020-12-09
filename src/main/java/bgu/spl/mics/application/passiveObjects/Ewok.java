@@ -41,6 +41,6 @@ public class Ewok {
         if (!available){
             available = true;
         }
-        notifyAll();
+        this.notifyAll();
     }
 }
