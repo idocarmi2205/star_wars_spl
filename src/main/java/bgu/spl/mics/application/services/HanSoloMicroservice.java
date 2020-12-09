@@ -18,39 +18,17 @@ import java.util.concurrent.TimeUnit;
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
  */
-public class HanSoloMicroservice extends MicroService {
+public class HanSoloMicroservice extends AttackMicroservice {
 
     public HanSoloMicroservice() {
         super("Han");
     }
 
 
-    Ewoks ewoks;
 
-    @Override
-    protected void initialize() {
 
-        ewoks = Ewoks.getInstance();
 
-        subscribeEvent(AttackEvent.class, callback -> {
-            Attack attackToMake = callback.getAttack();
-            ewoks.acquireEwoks(attackToMake.getSerials());
-            try {
-                TimeUnit.MILLISECONDS.sleep(attackToMake.getDuration());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            ewoks.releaseEwoks(attackToMake.getSerials());
-            complete(callback, true);
-            //System.out.println("Attack " +attackToMake.getSerials()+" Completed");
-            Diary.addAttack();
-        });
 
-        subscribeBroadcast(FinishedAttacksBroadcast.class, callback->{
-            Diary.setHanSoloFinish(System.currentTimeMillis());
-        });
-
-    }
 
     @Override
     protected void recordTerminationTime() {

@@ -1,6 +1,6 @@
 package bgu.spl.mics.application;
 import bgu.spl.mics.MessageBusImpl;
-import bgu.spl.mics.Tester.Tester;
+//import bgu.spl.mics.Tester.Tester;
 import bgu.spl.mics.application.passiveObjects.Config;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
@@ -15,37 +15,37 @@ import java.util.Scanner;
  * In the end, you should output a JSON.
  */
 public class Main {
-	public static void otherMain(String[] args){
-				Gson gson = new Gson();
-		Reader reader = null;
-		try {
-			 reader = new FileReader(args[0]);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		Config config = gson.fromJson(reader, Config.class);
-		Ewoks.getInstance().init(config.getEwoks());
-
-		Thread[] threads=new Thread[5];
-
-		InitializeMicroservices(config,threads);
-
-		try {
-			WaitForThreadsToFinish(threads);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-
-		String output=gson.toJson(Diary.getInstance());
-		try {
-			Writer writer = new FileWriter(args[1]);
-			writer.write(output);
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void otherMain(String[] args){
+//				Gson gson = new Gson();
+//		Reader reader = null;
+//		try {
+//			 reader = new FileReader(args[0]);
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//		Config config = gson.fromJson(reader, Config.class);
+//		Ewoks.getInstance().init(config.getEwoks());
+//
+//		Thread[] threads=new Thread[5];
+//
+//		InitializeMicroservices(config,threads);
+//
+//		try {
+//			WaitForThreadsToFinish(threads);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//
+//
+//		String output=gson.toJson(Diary.getInstance());
+//		try {
+//			Writer writer = new FileWriter(args[1]);
+//			writer.write(output);
+//			writer.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	public static void main(String[] args) {
 		Gson gson = new Gson();
 		Reader reader = null;

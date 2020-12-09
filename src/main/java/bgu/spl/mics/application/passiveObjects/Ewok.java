@@ -30,6 +30,7 @@ public class Ewok {
         }
 
         available = false;
+//        this.notifyAll();
 
     }
 
