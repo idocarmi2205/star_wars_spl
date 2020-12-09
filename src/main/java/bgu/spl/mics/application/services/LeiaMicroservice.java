@@ -3,6 +3,7 @@ package bgu.spl.mics.application.services;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import bgu.spl.mics.Future;
@@ -24,11 +25,13 @@ import bgu.spl.mics.application.passiveObjects.Diary;
 public class LeiaMicroservice extends MicroService {
 
     private Map<Attack, Future<Boolean>> attacks;
+    private CountDownLatch count;
 
 
 
-    public LeiaMicroservice(Attack[] attacks) {
+    public LeiaMicroservice(Attack[] attacks, CountDownLatch count) {
         super("Leia");
+        this.count = count;
         this.attacks = new HashMap<>();
         for (Attack attack : attacks) {
             //used put if absent if send us 2 of the same attack
@@ -41,8 +44,13 @@ public class LeiaMicroservice extends MicroService {
         /**
          * wait for 5 milliseconds so that all the attack microservices have a chance to subscribe to the event
          */
+//        try {
+//            TimeUnit.MILLISECONDS.sleep(100);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         try {
-            TimeUnit.MILLISECONDS.sleep(100);
+            count.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

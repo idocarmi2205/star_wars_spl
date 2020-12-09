@@ -8,6 +8,7 @@ import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 
@@ -22,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 public class C3POMicroservice extends AttackMicroservice{
 
 
-    public C3POMicroservice() {
-        super("C3PO");
+    public C3POMicroservice(CountDownLatch count) {
+        super("C3PO", count);
     }
 
 

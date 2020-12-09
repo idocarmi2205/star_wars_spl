@@ -8,6 +8,7 @@ import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -20,8 +21,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class HanSoloMicroservice extends AttackMicroservice {
 
-    public HanSoloMicroservice() {
-        super("Han");
+    public HanSoloMicroservice(CountDownLatch count) {
+        super("Han", count);
     }
 
 

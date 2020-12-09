@@ -252,8 +252,9 @@ public class Tester {
 
             boolean passedFirstTest = true;
             boolean passedSecondTest = true;
-            hanSoloObj = new HanSoloMicroservice();
-            C3POObj = new C3POMicroservice();
+            CountDownLatch count = new CountDownLatch(2);
+            hanSoloObj = new HanSoloMicroservice(count);
+            C3POObj = new C3POMicroservice(count);
 
             MessageBusImpl messageInstance = MessageBusImpl.getInstance();
 
@@ -331,7 +332,7 @@ public class Tester {
             /*
              Multi Threaded Check Against SubscribingToEvents
             */
-            hanSoloObj = new HanSoloMicroservice();
+            hanSoloObj = new HanSoloMicroservice(count);
             messageInstance.register(hanSoloObj);
             messageInstance.subscribeEvent(Event1.class, hanSoloObj);
             messageInstance.subscribeBroadcast(Broadcast1.class

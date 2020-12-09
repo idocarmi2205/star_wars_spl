@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MessageBusImplTest {
         MessageBus bus;
         Attack attack = new Attack(new LinkedList<Integer>(Arrays.asList(1,2)), 1000);
+        CountDownLatch count = new CountDownLatch(2);
 
     @BeforeEach
     void setUp() {
@@ -42,7 +44,7 @@ class MessageBusImplTest {
     @Test
     void subscribeAndSendEvent() {
         Future<Boolean> future= new Future<>();
-        HanSoloMicroservice service=new HanSoloMicroservice();
+        HanSoloMicroservice service=new HanSoloMicroservice(count);
         bus.register(service);
         bus.subscribeEvent(AttackEvent.class,service);
 
@@ -82,7 +84,7 @@ class MessageBusImplTest {
     void awaitMessage(){
         Future<Boolean> future=new Future<>();
         final Message[] message = {null};
-        HanSoloMicroservice service=new HanSoloMicroservice();
+        HanSoloMicroservice service=new HanSoloMicroservice(count);
         bus.register(service);
         bus.subscribeEvent(AttackEvent.class,service);
         Thread newThread = new Thread(()->{

@@ -7,19 +7,22 @@ import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AttackMicroservice extends MicroService {
 
     Ewoks ewoks;
+    CountDownLatch count;
 
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
      *             does not have to be unique)
      */
-    public AttackMicroservice(String name) {
+    public AttackMicroservice(String name, CountDownLatch count) {
         super(name);
+        this.count = count;
     }
 
     @Override
@@ -40,7 +43,7 @@ public abstract class AttackMicroservice extends MicroService {
             System.out.println("Attack " +attackToMake.getSerials()+" Completed By "+getName());
             Diary.addAttack();
         });
-
+        count.countDown();
         subscribeBroadcast(FinishedAttacksBroadcast.class, callback->{
             Diary.setC3P0Finish(System.currentTimeMillis());
         });
