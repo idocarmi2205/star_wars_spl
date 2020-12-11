@@ -10,6 +10,11 @@ import bgu.spl.mics.application.passiveObjects.Ewoks;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * abstract class for attackMicroservices: HanSolo ans c3po.
+ * both microservices act the same, so we can write some function for both of them
+ */
 public abstract class AttackMicroservice extends MicroService {
 
     Ewoks ewoks;
@@ -40,15 +45,17 @@ public abstract class AttackMicroservice extends MicroService {
             }
             ewoks.releaseEwoks(attackToMake.getSerials());
             complete(callback,true);
-            System.out.println("Attack " +attackToMake.getSerials()+" Completed By "+getName());
+//            System.out.println("Attack " +attackToMake.getSerials()+" Completed By "+getName());
             Diary.addAttack();
         });
         count.countDown();
         subscribeBroadcast(FinishedAttacksBroadcast.class, callback->{
-            Diary.setC3P0Finish(System.currentTimeMillis());
+            setFinishTime();
         });
 
 
     }
+
+    protected abstract void setFinishTime();
 
 }

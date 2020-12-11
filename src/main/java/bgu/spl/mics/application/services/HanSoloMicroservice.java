@@ -32,6 +32,7 @@ public class HanSoloMicroservice extends AttackMicroservice {
 
 
     @Override
+    protected void setFinishTime(){ Diary.setHanSoloFinish(System.currentTimeMillis());}
     protected void recordTerminationTime() {
         Diary.setHanSoloTerminate(System.currentTimeMillis());
     }

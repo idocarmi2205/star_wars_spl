@@ -3,19 +3,18 @@ package bgu.spl.mics;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.TestBroadcastEvent;
 import bgu.spl.mics.application.passiveObjects.Attack;
+import bgu.spl.mics.application.passiveObjects.Ewoks;
+import bgu.spl.mics.application.services.C3POMicroservice;
 import bgu.spl.mics.application.services.HanSoloMicroservice;
 import bgu.spl.mics.application.services.IntCounterMicroservice;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,6 +22,8 @@ class MessageBusImplTest {
         MessageBus bus;
         Attack attack = new Attack(new LinkedList<Integer>(Arrays.asList(1,2)), 1000);
         CountDownLatch count = new CountDownLatch(2);
+
+
 
     @BeforeEach
     void setUp() {
@@ -43,13 +44,14 @@ class MessageBusImplTest {
      */
     @Test
     void subscribeAndSendEvent() {
-        Future<Boolean> future= new Future<>();
-        HanSoloMicroservice service=new HanSoloMicroservice(count);
-        bus.register(service);
-        bus.subscribeEvent(AttackEvent.class,service);
-
+        Ewoks.getInstance().init(2);
+        HanSoloMicroservice han=new HanSoloMicroservice(count);
+        bus.register(han);
+        bus.subscribeEvent(AttackEvent.class,han);
+        Thread t = new Thread(han);
         Future<Boolean> f = bus.sendEvent(new AttackEvent(attack));
-        assertTrue(future.get());
+        t.start();
+        assertTrue(f.get());
     }
 
     /**
@@ -66,7 +68,7 @@ class MessageBusImplTest {
         };
         for (int i = 0; i < 5; i++) {
             //test type of microservice that increases increment for an int future
-            services.add(new IntCounterMicroservice());
+            services.add(new IntCounterMicroservice(""+ i));
             bus.register(services.getLast());
             bus.subscribeBroadcast(TestBroadcastEvent.class,services.getLast());
         }
@@ -108,8 +110,12 @@ class MessageBusImplTest {
      */
     @Test
     void complete(){
-        Future<Boolean> future=new Future<>();
+
         AttackEvent event=new AttackEvent(attack);
+        C3POMicroservice c = new C3POMicroservice(count);
+        bus.register(c);
+        bus.subscribeEvent(AttackEvent.class,c);
+        Future<Boolean> future= bus.sendEvent(event);
         bus.complete(event,true);
         //ensures that the event is resolved
         assertTrue(future.isDone());

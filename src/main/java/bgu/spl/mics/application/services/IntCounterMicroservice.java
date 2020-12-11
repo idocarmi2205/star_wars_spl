@@ -6,8 +6,8 @@ import bgu.spl.mics.MicroService;
 
 public class IntCounterMicroservice extends MicroService {
 
-    public IntCounterMicroservice() {
-        super("counter");
+    public IntCounterMicroservice(String str) {
+        super(str);
     }
 
     @Override

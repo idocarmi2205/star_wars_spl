@@ -62,9 +62,9 @@ public class LeiaMicroservice extends MicroService {
                 attacks.put(attack, sendEvent(event));
             }
         }
-
+        // record the finishTime in the diary
         sendBroadcast(new FinishedAttacksBroadcast());
-
+        // wait for all attack to finish
         for (Future<Boolean> future : attacks.values()){
             future.get();
         }

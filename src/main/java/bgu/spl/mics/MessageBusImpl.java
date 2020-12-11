@@ -78,6 +78,7 @@ public class MessageBusImpl implements MessageBus {
      */
     public <T> Future<T> sendEvent(Event<T> e) {
         synchronized (e.getClass()) {
+            //make sure we have that type of event and a microservice that subscribes to this event
             if (eventQueues.containsKey(e.getClass()) && !eventQueues.get(e.getClass()).isEmpty()) {
                 MicroService curr = eventQueues.get(e.getClass()).poll();
                 Future<T> f = new Future<>();

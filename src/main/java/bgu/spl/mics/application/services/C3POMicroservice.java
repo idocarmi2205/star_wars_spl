@@ -31,6 +31,7 @@ public class C3POMicroservice extends AttackMicroservice{
 
 
     @Override
+    protected void setFinishTime(){Diary.setC3P0Finish(System.currentTimeMillis());}
     protected void recordTerminationTime() {
         Diary.setC3P0Terminate(System.currentTimeMillis());
     }
