@@ -44,16 +44,17 @@ public class LeiaMicroservice extends MicroService {
         /**
          * wait for 5 milliseconds so that all the attack microservices have a chance to subscribe to the event
          */
-//        try {
-//            TimeUnit.MILLISECONDS.sleep(100);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
         try {
-            count.await();
+            TimeUnit.MILLISECONDS.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        //works faster without latch, may work better with latch
+//        try {
+//            count.await();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         Set<Attack> attackSet = attacks.keySet();
         for ( Attack attack : attackSet){
             //if no subscribers yet for attackEvent returns null instead of future
