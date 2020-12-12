@@ -1,8 +1,10 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.messages.TerminationBroadcast;
 import bgu.spl.mics.application.messages.TestBroadcastEvent;
 import bgu.spl.mics.application.passiveObjects.Attack;
+import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.services.C3POMicroservice;
 import bgu.spl.mics.application.services.HanSoloMicroservice;
@@ -22,6 +24,7 @@ class MessageBusImplTest {
         MessageBus bus;
         Attack attack = new Attack(new LinkedList<Integer>(Arrays.asList(1,2)), 1000);
         CountDownLatch count = new CountDownLatch(2);
+    CountDownLatch count2 = new CountDownLatch(2);
 
 
 
@@ -66,15 +69,17 @@ class MessageBusImplTest {
         Future<Integer> future=new Future<>();
         LinkedList<MicroService> services=new LinkedList<MicroService>() {
         };
-        for (int i = 0; i < 5; i++) {
-            //test type of microservice that increases increment for an int future
-            services.add(new IntCounterMicroservice(""+ i));
-            bus.register(services.getLast());
-            bus.subscribeBroadcast(TestBroadcastEvent.class,services.getLast());
+        services.add(new HanSoloMicroservice(count2));
+        services.add(new C3POMicroservice(count2));
+        for (MicroService ser:services){
+            bus.register(ser);
+            bus.subscribeBroadcast(TerminationBroadcast.class,ser);
         }
-        bus.sendBroadcast(new TestBroadcastEvent());
+        bus.sendBroadcast(new TerminationBroadcast());
+
         //checks that all the services increased the int
-        assertEquals(5,(int) future.get() );
+        assertNotEquals('0', Diary.getInstance().getC3POTerminate());
+        assertNotEquals('0', Diary.getInstance().getHanSoloTerminate());
     }
 
 
